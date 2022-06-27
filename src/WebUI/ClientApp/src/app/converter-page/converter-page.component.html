@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="row mt-5">
+    <div class="col-md-4">
+      <div class="mb-3">
+        <form action="">
+          <input (change)="this.onFilechange($event,1)" class="form-control" type="file" id="formFile1" name="formFile1" required>
+
+          <input (change)="this.onFilechange($event,2)" class="form-control" type="file" id="formFile2"name="formFile2" required>
+          <label for="byColumn">Համեմատել սյունով։</label>
+          <select (change)="setByColumn($event)" required class="form-control" id="byColumn">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+          <button *ngIf="!loading" (click)="this.upload()" type="button" class="btn btn-primary mt-3">Ավելացնել</button>
+          <button *ngIf="loading" disabled class="btn btn-primary mt-3">Սպասեք․․․</button>
+        </form>
+        <div *ngIf="done" class="done">
+          <p>Գործողությունը հաջողությամբ կատարվել է</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
