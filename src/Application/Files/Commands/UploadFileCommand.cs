@@ -73,6 +73,7 @@ namespace CleanArchitecture.Application.Files.Commands
                 }
 
                 writeExcel(file1Path,1,_context);
+                await _context.SaveChangesAsync(cancellationToken);
                 writeExcel(file2Path,2,_context);
                 DeleteTempFiles("../Application/Files/TempFiles/");
                 await _context.SaveChangesAsync(cancellationToken);
@@ -91,10 +92,11 @@ namespace CleanArchitecture.Application.Files.Commands
         }
 
 
+   
 
         static void writeExcel(string fileName,int tableNumber,IApplicationDbContext context)
         {
-            using (SpreadsheetDocument spreadSheetDocument = SpreadsheetDocument.Open(fileName, false))
+            using (SpreadsheetDocument spreadSheetDocument = SpreadsheetDocument.Open(fileName, true))
             {
                 WorkbookPart workbookPart = spreadSheetDocument.WorkbookPart;
                 IEnumerable<Sheet> sheets = spreadSheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>()
@@ -106,23 +108,17 @@ namespace CleanArchitecture.Application.Files.Commands
                 SheetData sheetData = workSheet.GetFirstChild<SheetData>();
                 Row[] rows = sheetData.Descendants<Row>().ToArray();
 
-                foreach (Cell cell in rows.ElementAt(0))
-                {
-                    Console.Write($"|   {GetCellValue(spreadSheetDocument, cell)} - loop1   |");
-                }
-
-                Console.WriteLine();
-                Console.WriteLine("____________________________________________");
                
                 for (int j = 1; j < rows.Count(); j++)
-                { 
+                {
+                    Console.WriteLine($"Tox - {j} | Table - {tableNumber}");
                     Table1 newRow1 = new Table1();
                     Table2 newRow2 = new Table2();
                     PropertyInfo[] properties = typeof(Table1).GetProperties();
                     
                     for (int i = 0; i < rows[j].Descendants<Cell>().Count(); i++)
                     {
-                        var element = GetCellValue(spreadSheetDocument, rows[j].Descendants<Cell>().ElementAt(i));
+                        var element = GetCellValue(spreadSheetDocument, rows[j]?.Descendants<Cell>()?.ElementAt(i));
                         
                         
                         if (tableNumber == 1)
@@ -151,7 +147,7 @@ namespace CleanArchitecture.Application.Files.Commands
         private static string GetCellValue(SpreadsheetDocument document, Cell cell)
         {
             SharedStringTablePart stringTablePart = document.WorkbookPart.SharedStringTablePart;
-            string value = cell.CellValue.InnerXml;
+            string value = cell?.CellValue?.InnerXml;
 
             if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
             {
